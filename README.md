@@ -1,54 +1,54 @@
 
 # Store Cart Project
 
-Versão: Primeiro commit
+Version: Initial commit
 
-Descrição
----------
-Projeto de exemplo de uma loja (carrinho de compras) criado como ponto de partida. Contém a estrutura inicial em TypeScript + React + Vite para construir uma aplicação de e-commerce simples.
+Description
+-----------
+Sample store project (shopping cart) created as a starting point. It includes the initial TypeScript + React + Vite structure to build a simple e-commerce application.
 
-Principais objetivos deste commit
-- Inicializar o repositório com arquivos básicos do projeto
-- Estrutura de pastas para componentes, serviços e estado
-- Configuração mínima para desenvolvimento com Vite e TypeScript
+Main goals of this commit
+- Initialize the repository with the project's basic files
+- Set up folder structure for components, services, and state
+- Provide a minimal setup for development with Vite and TypeScript
 
-Funcionalidades (planejadas)
-- Listagem de produtos
-- Adição/remoção de itens no carrinho
-- Persistência simples do carrinho (localStorage)
-- Rotas para página de produtos e checkout
+Planned features
+- Product listing
+- Add/remove cart items
+- Simple cart persistence (localStorage)
+- Routes for the products and checkout pages
 
-Como começar
---------------
-1. Instalar dependências:
+Getting started
+---------------
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Rodar em modo de desenvolvimento:
+2. Run in development mode:
 
 ```bash
 npm run dev
 ```
 
-Estrutura do repositório
+Repository structure
 -------------------------
-- `src/` - código fonte principal
-	- `components/` - componentes React reutilizáveis
-	- `pages/` - páginas/rotas da aplicação
-	- `store/` - lógica de estado (módulos do carrinho, etc.)
-	- `services/` - chamadas a APIs e mocks
+- `src/` - main source code
+	- `components/` - reusable React components
+	- `pages/` - application pages/routes
+	- `store/` - state logic (cart modules, etc.)
+	- `services/` - API calls and mocks
 
-Configuração
+Configuration
 -----------
 - Vite + React + TypeScript
 - ESLint + Prettier
 
-Licença
+License
 -------
-Escolha de licença será adicionada posteriormente.
+License choice will be added later.
 
-Autor
+Author
 -----
-Gustavo
+Gustavo Pinto da Conceição
