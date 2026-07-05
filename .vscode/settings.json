@@ -1,0 +1,24 @@
+{
+  "eslint.packageManager": "npm",
+  "eslint.useFlatConfig": true,
+  "eslint.run": "onSave",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "code-runner.executorMap": {
+    "typescript": "npx tsx"
+  },
+
+  "code-runner.clearPreviousOutput": true
+}

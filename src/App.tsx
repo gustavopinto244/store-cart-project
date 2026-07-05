@@ -1,18 +1,18 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter } from 'react-router-dom';
+
+import GlobalStyles from './styles/GlobalStyles';
+
 import Header from './layouts/Header';
 import Footer from './layouts/Footer';
+
+import Routes from './routes';
 
 function App() {
   return (
     <BrowserRouter>
         <Header />
-        <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/loja" element={<StorePage />} />
-            <Route path="/carrinho" element={<CartPage />} />
-        </Routes>
+        <Routes />
+        <GlobalStyles />
         <Footer />
     </BrowserRouter>
   );

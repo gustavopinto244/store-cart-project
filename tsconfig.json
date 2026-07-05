@@ -16,16 +16,18 @@
 
     /* Qualidade de código */
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
     /* Aliases */
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "src/pages", "src/layouts", "src/styles", "App.tsx", "main.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
