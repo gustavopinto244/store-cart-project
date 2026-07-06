@@ -1,0 +1,153 @@
+import validator from 'validator';
+import bcryptjs from 'bcryptjs';
+import { pool } from '../config/database.ts';
+
+export interface IUser {
+  _id: number;
+  email: string;
+  password: string;
+  name: string;
+}
+
+interface UserBody {
+  email: string;
+  password: string;
+  name: string;
+}
+
+interface UserRow {
+  id: number;
+  email: string;
+  password: string;
+  name: string;
+}
+
+class UserAuth {
+  private body: UserBody;
+  public errors: string[];
+  public user: IUser | null;
+
+  constructor(body: UserBody) {
+    this.body = body;
+    this.errors = [];
+    this.user = null;
+  }
+
+  private cleanUp(): void {
+    this.body = {
+      email: typeof this.body.email === 'string' ? this.body.email.trim().toLowerCase() : '',
+      password: typeof this.body.password === 'string' ? this.body.password : '',
+      name: typeof this.body.name === 'string' ? this.body.name.trim() : '',
+    };
+  }
+
+  private isValidPassword(password: string): boolean {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(password);
+  }
+
+  private validateRegister(): void {
+    if (!validator.isEmail(this.body.email)) {
+      this.errors.push('Invalid email.');
+    }
+    if (this.body.password.length < 8 || this.body.password.length > 50) {
+      this.errors.push('The password must have between 8 and 50 characters.');
+    }
+    if (!this.isValidPassword(this.body.password)) {
+      this.errors.push(
+        'The password must contain at least one uppercase letter, one lowercase letter, one number and one special character.',
+      );
+    }
+    if (!this.body.name || this.body.name.length < 2) {
+      this.errors.push('Name must have at least 2 characters.');
+    }
+  }
+
+  private validateLogin(): void {
+    if (!validator.isEmail(this.body.email)) {
+      this.errors.push('Invalid email.');
+    }
+    if (!this.body.password || this.body.password.length > 50) {
+      this.errors.push('Invalid password.');
+    }
+  }
+
+  private async userExists(): Promise<void> {
+    const result = await pool.query('SELECT 1 FROM users WHERE email = $1 LIMIT 1', [
+      this.body.email,
+    ]);
+    if (result.rowCount && result.rowCount > 0) {
+      this.errors.push('E-mail already registered.');
+    }
+  }
+
+  public async register(): Promise<void> {
+    this.cleanUp();
+    this.validateRegister();
+    if (this.errors.length > 0) return;
+
+    await this.userExists();
+    if (this.errors.length > 0) return;
+
+    const salt = bcryptjs.genSaltSync(10);
+    const hashedPassword = bcryptjs.hashSync(this.body.password, salt);
+
+    try {
+      const result = await pool.query<UserRow>(
+        'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, password, name',
+        [this.body.email, hashedPassword, this.body.name],
+      );
+
+      const user = result.rows[0];
+      this.user = {
+        _id: user.id,
+        email: user.email,
+        password: user.password,
+        name: user.name,
+      };
+    } catch (err: unknown) {
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'code' in err &&
+        (err as { code?: string }).code === '23505'
+      ) {
+        this.errors.push('E-mail already registered.');
+        return;
+      }
+      throw err;
+    }
+  }
+
+  public async login(): Promise<void> {
+    this.cleanUp();
+    this.validateLogin();
+    if (this.errors.length > 0) return;
+
+    const result = await pool.query<UserRow>(
+      'SELECT id, email, password, name FROM users WHERE email = $1 LIMIT 1',
+      [this.body.email],
+    );
+
+    if (result.rowCount === 0) {
+      this.errors.push('User not found.');
+      return;
+    }
+
+    const user = result.rows[0];
+    const isMatch = bcryptjs.compareSync(this.body.password, user.password);
+    if (!isMatch) {
+      this.errors.push('Invalid password.');
+      return;
+    }
+
+    this.user = {
+      _id: user.id,
+      email: user.email,
+      password: user.password,
+      name: user.name,
+    };
+  }
+}
+
+export default UserAuth;
