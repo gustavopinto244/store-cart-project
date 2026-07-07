@@ -5,6 +5,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      '/login': 'http://localhost:3000',
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

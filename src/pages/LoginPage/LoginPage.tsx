@@ -1,6 +1,5 @@
 import { useState, type SyntheticEvent } from 'react';
 import validator from 'validator';
-
 import './LoginPage.css';
 
 function LoginPage() {
@@ -75,7 +74,7 @@ function LoginPage() {
             <h2>Welcome back!</h2>
             <span>Please login to access your account and continue shopping.</span>
           </div>
-          <form action="/login" method="post" onSubmit={handleLoginSubmit} noValidate>
+          <form action="/login/login" method="post" onSubmit={handleLoginSubmit} noValidate>
             <div className="form-group">
               <label htmlFor="login-email">Email</label>
               <input
@@ -121,7 +120,12 @@ function LoginPage() {
             <h2>Create your account</h2>
             <span>Register to access your account and continue shopping.</span>
           </div>
-          <form action="/register" method="post" onSubmit={handleRegistrationSubmit} noValidate>
+          <form
+            action="/login/register"
+            method="post"
+            onSubmit={handleRegistrationSubmit}
+            noValidate
+          >
             <div className="form-group">
               <label htmlFor="name">Name</label>
               <input
