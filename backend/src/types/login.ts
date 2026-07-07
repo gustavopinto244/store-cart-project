@@ -19,3 +19,7 @@ export interface RegisterResponse {
   userId: string;
   message: string;
 }
+
+export interface LogoutResponse {}
+
+export interface LogoutResponse {}
