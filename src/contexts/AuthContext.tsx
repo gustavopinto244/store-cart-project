@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { type AxiosError } from 'axios';
 import axios from '../api/axios';
+import { getToken, setToken, removeToken } from '../utils/tokenStorage';
 
 interface AuthUser {
   _id: string;
@@ -18,6 +19,8 @@ interface AuthResponse {
   success: boolean;
   message?: string;
   errors?: string[];
+  token?: string;
+  user?: AuthUser;
 }
 
 interface AuthContextType {
@@ -36,12 +39,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
+      const token = getToken();
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
       const res = await axios.get<MeResponse>('/login/me');
       if (res.data.authenticated && res.data.user) {
         setUser(res.data.user);
       } else {
+        removeToken();
         setUser(null);
       }
     } catch {
@@ -49,18 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     checkAuth();
-  }, []);
+  }, [checkAuth]);
 
   const login = async (email: string, password: string): Promise<AuthResponse> => {
     try {
       const res = await axios.post<AuthResponse>('/login/login', { email, password });
-      if (res.data.success) {
-        await checkAuth();
+      if (res.data.success && res.data.token && res.data.user) {
+        setToken(res.data.token);
+        setUser(res.data.user);
       }
       return res.data;
     } catch (err) {
@@ -77,6 +88,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (name: string, email: string, password: string): Promise<AuthResponse> => {
     try {
       const res = await axios.post<AuthResponse>('/login/register', { name, email, password });
+      if (res.data.success && res.data.token && res.data.user) {
+        setToken(res.data.token);
+        setUser(res.data.user);
+      }
       return res.data;
     } catch (err) {
       const axiosError = err as AxiosError<AuthResponse>;
@@ -95,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // proceed even if request fails
     }
+    removeToken();
     setUser(null);
   };
 

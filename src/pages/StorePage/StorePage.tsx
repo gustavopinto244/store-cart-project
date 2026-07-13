@@ -516,6 +516,11 @@ function StorePage() {
                 {sortedProducts.map((product) => (
                   <article className="product-card" key={product.id}>
                     <div className="product-card__visual">
+                      <img
+                        src={`https://picsum.photos/seed/${product.id}/400/300`}
+                        alt={product.name}
+                        loading="lazy"
+                      />
                       <span>{product.category}</span>
                     </div>
                     <div className="product-card__content">

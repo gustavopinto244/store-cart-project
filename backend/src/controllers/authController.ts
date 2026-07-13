@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import UserAuth from '../models/UserModel';
+import { generateToken, verifyToken } from '../utils/token';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -16,9 +17,21 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    res.json({
+    const token = generateToken({
+      id: auth.user._id,
+      name: auth.user.name,
+      email: auth.user.email,
+    });
+
+    res.status(201).json({
       success: true,
-      message: 'Account created successfully! You can now sign in.',
+      message: 'Account created successfully! You are now signed in.',
+      token,
+      user: {
+        _id: auth.user._id,
+        name: auth.user.name,
+        email: auth.user.email,
+      },
     });
   } catch (err) {
     console.error('[register]', err);
@@ -41,17 +54,21 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    req.session.user = {
-      _id: auth.user._id.toString(),
+    const token = generateToken({
+      id: auth.user._id,
       name: auth.user.name,
       email: auth.user.email,
-    };
+    });
 
-    req.session.save(() => {
-      res.json({
-        success: true,
-        message: 'Welcome back! You are now signed in.',
-      });
+    res.json({
+      success: true,
+      message: 'Welcome back! You are now signed in.',
+      token,
+      user: {
+        _id: auth.user._id,
+        name: auth.user.name,
+        email: auth.user.email,
+      },
     });
   } catch (err) {
     console.error('[login]', err);
@@ -59,25 +76,35 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const logout = (req: Request, res: Response): void => {
-  req.session.destroy(() => {
-    res.json({
-      success: true,
-      message: 'You have been signed out.',
-    });
+export const logout = (_req: Request, res: Response): void => {
+  res.json({
+    success: true,
+    message: 'You have been signed out.',
   });
 };
 
 export const me = (req: Request, res: Response): void => {
-  if (req.session.user) {
-    res.json({
-      authenticated: true,
-      user: req.session.user,
-    });
-  } else {
-    res.json({
-      authenticated: false,
-      user: null,
-    });
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.json({ authenticated: false, user: null });
+    return;
   }
+
+  const token = authHeader.split(' ')[1];
+  const decoded = verifyToken(token);
+
+  if (!decoded) {
+    res.json({ authenticated: false, user: null });
+    return;
+  }
+
+  res.json({
+    authenticated: true,
+    user: {
+      _id: decoded.id,
+      name: decoded.name,
+      email: decoded.email,
+    },
+  });
 };

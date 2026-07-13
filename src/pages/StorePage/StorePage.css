@@ -251,12 +251,26 @@
 }
 
 .product-card__visual {
+    position: relative;
     min-height: 150px;
     padding: 18px;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
     background: linear-gradient(135deg, #0f172a, #334155 55%, #f59e0b 140%);
+}
+
+.product-card__visual img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-card__visual span {
+    position: relative;
+    z-index: 1;
 }
 
 .product-card__visual span {
