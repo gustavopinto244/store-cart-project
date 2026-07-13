@@ -1,8 +1,13 @@
+import './UserPage.css';
+
 function UserPage() {
   return (
-    <div>
-      <h1>User Page</h1>
-      <p>This is the user page.</p>
+    <div className="user-page">
+      <div className="section-heading">
+        <p>Account</p>
+        <h2>My Account</h2>
+        <span>Manage your profile and preferences.</span>
+      </div>
     </div>
   );
 }

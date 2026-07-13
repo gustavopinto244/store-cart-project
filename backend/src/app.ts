@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import { startServer } from './config/database.ts';
 
 import loginRoutes from './routes/loginRoutes.ts';
+import productsRoutes from './routes/productsRoutes.ts';
 
 class App {
   app: express.Application;
@@ -29,6 +30,7 @@ class App {
 
   routes() {
     this.app.use('/login', loginRoutes);
+    this.app.use('/products', productsRoutes);
   }
 
   async start() {
