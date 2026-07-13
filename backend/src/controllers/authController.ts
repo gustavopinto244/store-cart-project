@@ -1,37 +1,28 @@
 import { Request, Response } from 'express';
 import UserAuth from '../models/UserModel';
 
-const ALLOWED_BACK_PATHS = new Set(['/login/index', '/']);
-const FALLBACK_URL = '/login/index';
-
-function getSafeBackURL(req: Request): string {
-  const referer = req.header('Referer');
-  if (!referer) return FALLBACK_URL;
-
-  try {
-    const url = new URL(referer);
-    return ALLOWED_BACK_PATHS.has(url.pathname) ? url.pathname : FALLBACK_URL;
-  } catch {
-    return FALLBACK_URL;
-  }
-}
-
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const auth = new UserAuth(req.body);
     await auth.register();
 
     if (auth.errors.length > 0) {
-      req.flash('errors', auth.errors);
-      const backURL = getSafeBackURL(req);
-      req.session.save(() => res.redirect(backURL));
+      res.status(400).json({ success: false, errors: auth.errors });
       return;
     }
 
-    res.redirect(FALLBACK_URL);
+    if (!auth.user) {
+      res.status(500).json({ success: false, errors: ['Registration failed. Please try again.'] });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: 'Account created successfully! You can now sign in.',
+    });
   } catch (err) {
     console.error('[register]', err);
-    req.session.save(() => res.redirect(FALLBACK_URL));
+    res.status(500).json({ success: false, errors: ['Internal server error. Please try again later.'] });
   }
 };
 
@@ -41,13 +32,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     await auth.login();
 
     if (auth.errors.length > 0) {
-      const backURL = getSafeBackURL(req);
-      req.session.save(() => res.redirect(backURL));
+      res.status(400).json({ success: false, errors: auth.errors });
       return;
     }
 
     if (!auth.user) {
-      req.session.save(() => res.redirect(FALLBACK_URL));
+      res.status(500).json({ success: false, errors: ['Login failed. Please try again.'] });
       return;
     }
 
@@ -57,15 +47,37 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       email: auth.user.email,
     };
 
-    req.session.save(() => res.redirect('/'));
+    req.session.save(() => {
+      res.json({
+        success: true,
+        message: 'Welcome back! You are now signed in.',
+      });
+    });
   } catch (err) {
     console.error('[login]', err);
-    req.session.save(() => res.redirect(FALLBACK_URL));
+    res.status(500).json({ success: false, errors: ['Internal server error. Please try again later.'] });
   }
 };
 
 export const logout = (req: Request, res: Response): void => {
   req.session.destroy(() => {
-    res.redirect(FALLBACK_URL);
+    res.json({
+      success: true,
+      message: 'You have been signed out.',
+    });
   });
+};
+
+export const me = (req: Request, res: Response): void => {
+  if (req.session.user) {
+    res.json({
+      authenticated: true,
+      user: req.session.user,
+    });
+  } else {
+    res.json({
+      authenticated: false,
+      user: null,
+    });
+  }
 };

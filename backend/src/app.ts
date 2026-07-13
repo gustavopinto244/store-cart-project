@@ -29,15 +29,19 @@ class App {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
     this.app.use(sessionMiddleware);
-    this.app.use(helmet());
+    this.app.use(
+      helmet({
+        contentSecurityPolicy: false,
+      }),
+    );
   }
 
   routes() {
     this.app.use('/login', loginRoutes);
   }
 
-  start() {
-    startServer();
+  async start() {
+    await startServer();
   }
 }
 

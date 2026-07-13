@@ -42,20 +42,20 @@ class UserAuth {
   }
 
   private isValidPassword(password: string): boolean {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
     return regex.test(password);
   }
 
   private validateRegister(): void {
     if (!validator.isEmail(this.body.email)) {
-      this.errors.push('Invalid email.');
+      this.errors.push('Please enter a valid email address.');
     }
     if (this.body.password.length < 8 || this.body.password.length > 50) {
-      this.errors.push('The password must have between 8 and 50 characters.');
+      this.errors.push('Password must be between 8 and 50 characters.');
     }
     if (!this.isValidPassword(this.body.password)) {
       this.errors.push(
-        'The password must contain at least one uppercase letter, one lowercase letter, one number and one special character.',
+        'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character.',
       );
     }
     if (!this.body.name || this.body.name.length < 2) {
@@ -65,10 +65,10 @@ class UserAuth {
 
   private validateLogin(): void {
     if (!validator.isEmail(this.body.email)) {
-      this.errors.push('Invalid email.');
+      this.errors.push('Please enter a valid email address.');
     }
     if (!this.body.password || this.body.password.length > 50) {
-      this.errors.push('Invalid password.');
+      this.errors.push('Password is required.');
     }
   }
 
@@ -77,7 +77,7 @@ class UserAuth {
       this.body.email,
     ]);
     if (result.rowCount && result.rowCount > 0) {
-      this.errors.push('E-mail already registered.');
+      this.errors.push('An account with this email already exists.');
     }
   }
 
@@ -112,7 +112,7 @@ class UserAuth {
         'code' in err &&
         (err as { code?: string }).code === '23505'
       ) {
-        this.errors.push('E-mail already registered.');
+        this.errors.push('An account with this email already exists.');
         return;
       }
       throw err;
@@ -130,14 +130,14 @@ class UserAuth {
     );
 
     if (result.rowCount === 0) {
-      this.errors.push('User not found.');
+      this.errors.push('No account found with this email address.');
       return;
     }
 
     const user = result.rows[0];
     const isMatch = bcryptjs.compareSync(this.body.password, user.password);
     if (!isMatch) {
-      this.errors.push('Invalid password.');
+      this.errors.push('Incorrect password. Please try again.');
       return;
     }
 
