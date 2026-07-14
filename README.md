@@ -175,6 +175,7 @@ npm install
 ````
 
 2. Start the backend:
+
 ```bash
 npm run back:dev
 ````
@@ -254,8 +255,5 @@ The build step compiles TypeScript from `backend/src/` to `dist-backend/` (Commo
 ## Author
 
 **Gustavo Pinto da Conceição**  
-[GitHub](https://github.com/gustavopinto244) — [LinkedIn](https://linkedin.com/in/gustavo-pinto-da-conceicao)
-
-## License
-
-MIT
+[GitHub](https://github.com/gustavopinto244)  
+[LinkedIn](https://linkedin.com/in/gustavo-pinto-da-conceicao)
