@@ -32,4 +32,30 @@ export default createGlobalStyle`
     body {
     margin: 0;
     }
-`
+
+    .cart-toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      background: #0f172a;
+      color: #f8fafc;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 16px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.28);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .cart-toast--visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+`;

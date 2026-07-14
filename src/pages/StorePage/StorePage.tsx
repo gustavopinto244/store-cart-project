@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import Product from '../../types/Product';
 import axios from '../../api/axios';
+import { useCart } from '../../contexts/CartContext';
 
 const priceRanges = [
   { label: 'Up to $50', min: 0, max: 50 },
@@ -50,6 +51,8 @@ function StorePage() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string>('newest');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const { addToCart } = useCart();
 
   const togglePriceRange = (index: number) => {
     setSelectedPriceRanges((prev) =>
@@ -282,7 +285,9 @@ function StorePage() {
                     </div>
                     <div className="product-card__footer">
                       <strong>{product.price}</strong>
-                      <button type="button">Add to Cart</button>
+                      <button type="button" onClick={() => addToCart(product)}>
+                        Add to Cart
+                      </button>
                     </div>
                   </article>
                 ))}

@@ -49,12 +49,37 @@ async function ensureProductsTable(): Promise<void> {
   `);
 }
 
+async function ensureOrdersTable(): Promise<void> {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      total NUMERIC(10,2) NOT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )
+  `);
+}
+
+async function ensureOrderItemsTable(): Promise<void> {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS order_items (
+      id SERIAL PRIMARY KEY,
+      order_id INTEGER NOT NULL REFERENCES orders(id),
+      product_name TEXT NOT NULL,
+      price NUMERIC(10,2) NOT NULL,
+      quantity INTEGER NOT NULL
+    )
+  `);
+}
+
 // Initialization
 export async function startServer() {
   try {
     await pool.query('SELECT 1');
     await ensureUsersTable();
     await ensureProductsTable();
+    await ensureOrdersTable();
+    await ensureOrderItemsTable();
     await seedProducts();
     console.log('Connected to the database.');
   } catch (error) {

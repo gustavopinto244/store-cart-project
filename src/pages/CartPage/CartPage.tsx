@@ -1,74 +1,78 @@
 import './CartPage.css';
-import { useMemo, useState } from 'react';
-
-const initialCart = [
-  {
-    id: 1,
-    name: 'Brazil Collection',
-    category: 'Clothing',
-    quantity: 1,
-    price: '$279.90',
-  },
-  {
-    id: 2,
-    name: 'Brazil Cap',
-    category: 'Accessories',
-    quantity: 2,
-    price: '$79.90',
-  },
-  {
-    id: 3,
-    name: 'Brazil Soccer Ball',
-    category: 'Sports',
-    quantity: 1,
-    price: '$149.90',
-  },
-];
-
-type CartItem = {
-  id: number;
-  name: string;
-  category: string;
-  quantity: number;
-  price: string;
-};
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../../contexts/CartContext';
+import axios from '../../api/axios';
 
 function CartPage() {
-  const [cart, setCart] = useState<CartItem[]>(initialCart);
+  const { cartItems, removeFromCart, updateQuantity, clearCart, cartTotal } = useCart();
+  const [checkoutStatus, setCheckoutStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
+    'idle',
+  );
 
-  const updateQuantity = (itemId: number, nextQuantity: number) => {
-    setCart((currentCart) =>
-      currentCart.map((item) =>
-        item.id === itemId ? { ...item, quantity: Math.max(1, nextQuantity) } : item,
-      ),
-    );
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) return;
+    setCheckoutStatus('loading');
+    try {
+      await axios.post('/checkout', {
+        items: cartItems.map((item) => ({
+          product_name: item.name,
+          price: item.priceValue,
+          quantity: item.quantity,
+        })),
+        total: cartTotal,
+      });
+      setCheckoutStatus('success');
+      clearCart();
+    } catch {
+      setCheckoutStatus('error');
+    }
   };
 
-  const total = useMemo(
-    () =>
-      cart.reduce((sum, item) => {
-        const itemPrice = parseFloat(item.price.replace('$', ''));
+  if (checkoutStatus === 'success') {
+    return (
+      <section className="cart-page">
+        <div className="cart-heading">
+          <p>Cart</p>
+          <h2>Order placed successfully!</h2>
+          <span>Thank you for your purchase. Your order has been registered.</span>
+        </div>
+        <Link className="cart-page__checkout" to="/store">
+          Continue Shopping
+        </Link>
+      </section>
+    );
+  }
 
-        return sum + itemPrice * item.quantity;
-      }, 0),
-    [cart],
-  );
+  if (cartItems.length === 0) {
+    return (
+      <section className="cart-page">
+        <div className="cart-heading">
+          <p>Cart</p>
+          <h2>Your cart is empty</h2>
+          <span>Add products to see the selected items here.</span>
+        </div>
+        <Link className="cart-page__checkout" to="/store">
+          Browse Products
+        </Link>
+      </section>
+    );
+  }
 
   return (
     <section className="cart-page">
       <div className="cart-heading">
         <p>Cart</p>
-        {cart.length === 0 ? (
-          <>
-            <h2>Your cart is empty</h2>
-            <span>Add products to see the selected items here.</span>
-          </>
-        ) : null}
       </div>
       <div className="cart-items">
-        {cart.map((item) => (
+        {cartItems.map((item) => (
           <article className="cart-item" key={item.id}>
             <div className="cart-item__visual">
+              <img
+                src={`https://picsum.photos/seed/${item.id}/400/300`}
+                alt={item.name}
+                loading="lazy"
+              />
               <span>{item.category}</span>
             </div>
             <div className="cart-item__content">
@@ -105,16 +109,26 @@ function CartPage() {
             </div>
             <div className="cart-item__footer">
               <strong>{item.price}</strong>
-              <button type="button">Remove</button>
+              <button type="button" onClick={() => removeFromCart(item.id)}>
+                Remove
+              </button>
             </div>
           </article>
         ))}
       </div>
       <div className="cart-summary">
-        <strong>{total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</strong>
+        <strong>{cartTotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</strong>
       </div>
-      <button className="cart-page__checkout" type="button">
-        Proceed to Checkout
+      {checkoutStatus === 'error' && (
+        <p className="cart-page__error">Checkout failed. Please try again.</p>
+      )}
+      <button
+        className="cart-page__checkout"
+        type="button"
+        onClick={handleCheckout}
+        disabled={checkoutStatus === 'loading'}
+      >
+        {checkoutStatus === 'loading' ? 'Processing...' : 'Proceed to Checkout'}
       </button>
     </section>
   );

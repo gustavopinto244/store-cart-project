@@ -9,6 +9,7 @@ export default defineConfig({
     proxy: {
       '/login': 'http://localhost:3000',
       '/products': 'http://localhost:3000',
+      '/checkout': 'http://localhost:3000',
     },
   },
   test: {

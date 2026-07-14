@@ -1,6 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 
 import { AuthProvider } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
 
 import GlobalStyles from './styles/GlobalStyles';
 
@@ -13,10 +14,12 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Header />
-        <Routes />
-        <GlobalStyles />
-        <Footer />
+        <CartProvider>
+          <Header />
+          <Routes />
+          <GlobalStyles />
+          <Footer />
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );
