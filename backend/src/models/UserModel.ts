@@ -89,8 +89,8 @@ class UserAuth {
     await this.userExists();
     if (this.errors.length > 0) return;
 
-    const salt = bcryptjs.genSaltSync(10);
-    const hashedPassword = bcryptjs.hashSync(this.body.password, salt);
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(this.body.password, salt);
 
     try {
       const result = await pool.query<UserRow>(
@@ -135,7 +135,7 @@ class UserAuth {
     }
 
     const user = result.rows[0];
-    const isMatch = bcryptjs.compareSync(this.body.password, user.password);
+    const isMatch = await bcryptjs.compare(this.body.password, user.password);
     if (!isMatch) {
       this.errors.push('Incorrect password. Please try again.');
       return;

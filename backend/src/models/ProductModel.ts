@@ -26,6 +26,18 @@ class ProductSearch {
       throw new Error('Error fetching products');
     }
   }
+
+  static async getPricesByIds(ids: number[]): Promise<Map<number, number>> {
+    const { rows } = await pool.query<{ id: number; price_value: number }>(
+      'SELECT id, price_value FROM products WHERE id = ANY($1)',
+      [ids],
+    );
+    const map = new Map<number, number>();
+    for (const row of rows) {
+      map.set(row.id, row.price_value);
+    }
+    return map;
+  }
 }
 
 export default ProductSearch;

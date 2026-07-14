@@ -29,10 +29,6 @@ export default createGlobalStyle`
     box-sizing: border-box;
     }
 
-    body {
-    margin: 0;
-    }
-
     .cart-toast {
       position: fixed;
       bottom: 32px;

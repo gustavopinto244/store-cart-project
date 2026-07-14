@@ -45,7 +45,7 @@ function LoginPage() {
   };
 
   const validatePasswordLogin = (password: string) => {
-    if (!validator.isLength(password, { min: 0 })) {
+    if (!password || password.trim().length === 0) {
       return 'Password must be inserted.';
     }
     return '';

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import OrderModel from '../models/OrderModel.ts';
+import ProductSearch from '../models/ProductModel.ts';
 
 export async function checkout(req: Request, res: Response): Promise<void> {
   try {
@@ -18,6 +19,21 @@ export async function checkout(req: Request, res: Response): Promise<void> {
     if (typeof total !== 'number' || total <= 0) {
       res.status(400).json({ success: false, errors: ['Invalid total amount.'] });
       return;
+    }
+
+    const productIds = items.map((i: { product_id: number }) => i.product_id);
+    const serverPrices = await ProductSearch.getPricesByIds(productIds);
+
+    for (const item of items) {
+      const serverPrice = serverPrices.get(item.product_id);
+      if (serverPrice === undefined) {
+        res.status(400).json({ success: false, errors: [`Product ID ${item.product_id} not found.`] });
+        return;
+      }
+      if (Math.abs(serverPrice - item.price) > 0.01) {
+        res.status(400).json({ success: false, errors: ['Price mismatch. Please review your cart.'] });
+        return;
+      }
     }
 
     const orderId = await OrderModel.create(parseInt(req.user._id, 10), items, total);

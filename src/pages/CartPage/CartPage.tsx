@@ -16,6 +16,7 @@ function CartPage() {
     try {
       await axios.post('/checkout', {
         items: cartItems.map((item) => ({
+          product_id: item.id,
           product_name: item.name,
           price: item.priceValue,
           quantity: item.quantity,

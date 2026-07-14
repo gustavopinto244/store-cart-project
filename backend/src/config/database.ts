@@ -65,10 +65,17 @@ async function ensureOrderItemsTable(): Promise<void> {
     CREATE TABLE IF NOT EXISTS order_items (
       id SERIAL PRIMARY KEY,
       order_id INTEGER NOT NULL REFERENCES orders(id),
+      product_id INTEGER NOT NULL,
       product_name TEXT NOT NULL,
       price NUMERIC(10,2) NOT NULL,
       quantity INTEGER NOT NULL
     )
+  `);
+}
+
+async function migrateOrderItemsTable(): Promise<void> {
+  await pool.query(`
+    ALTER TABLE order_items ADD COLUMN IF NOT EXISTS product_id INTEGER
   `);
 }
 
@@ -80,6 +87,7 @@ export async function startServer() {
     await ensureProductsTable();
     await ensureOrdersTable();
     await ensureOrderItemsTable();
+    await migrateOrderItemsTable();
     await seedProducts();
     console.log('Connected to the database.');
   } catch (error) {

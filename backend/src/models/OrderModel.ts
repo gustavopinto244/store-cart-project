@@ -1,6 +1,7 @@
 import { pool } from '../config/database.ts';
 
 interface OrderItem {
+  product_id: number;
   product_name: string;
   price: number;
   quantity: number;
@@ -22,8 +23,8 @@ class OrderModel {
 
       for (const item of items) {
         await client.query(
-          'INSERT INTO order_items (order_id, product_name, price, quantity) VALUES ($1, $2, $3, $4)',
-          [orderId, item.product_name, item.price, item.quantity],
+          'INSERT INTO order_items (order_id, product_id, product_name, price, quantity) VALUES ($1, $2, $3, $4, $5)',
+          [orderId, item.product_id, item.product_name, item.price, item.quantity],
         );
       }
 

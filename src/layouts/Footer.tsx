@@ -8,7 +8,7 @@ function Footer() {
         <p>A project for Gustavo's portfolio.</p>
       </div>
 
-      <span>© 2026 Gustavo Pinto. All rights reserved.</span>
+      <span>&copy; {new Date().getFullYear()} Gustavo Pinto. All rights reserved.</span>
     </footer>
   );
 }

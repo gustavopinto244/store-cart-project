@@ -37,15 +37,15 @@ function HomePage() {
     <main className="homepage">
       <section className="hero">
         <div className="hero__content">
-          <p className="hero__eyebrow">Wellcome to this portfolio site</p>
-          <h1>You'll need to create a account to access all features</h1>
+          <p className="hero__eyebrow">Welcome to this portfolio site</p>
+          <h1>You'll need to create an account to access all features</h1>
           <p className="hero__description">
             Explore the products and discover the responsive design of this portfolio site.
           </p>
 
           <div className="hero__actions">
             <Link className="hero__button hero__button--primary" to="/login">
-              Enter a account
+              Sign In
             </Link>
             <Link className="hero__button hero__button--secondary" to="/store">
               Visit the catalog
@@ -65,10 +65,7 @@ function HomePage() {
             <div className="hero__spotlight-footer">
               <strong>$279.90</strong>
               <span>Estimated ship: 2 to 4 days</span>
-              <Link
-                className="hero__button hero__button--primary"
-                to="/store/product/brazil-collection"
-              >
+              <Link className="hero__button hero__button--primary" to="/store">
                 View Details
               </Link>
             </div>
@@ -112,7 +109,7 @@ function HomePage() {
               </div>
               <div className="product-card__footer">
                 <strong>{product.price}</strong>
-                <button type="button">Add to Cart</button>
+                <Link to="/store">View in Store</Link>
               </div>
             </article>
           ))}
