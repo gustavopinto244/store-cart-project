@@ -193,15 +193,15 @@ This starts Vite on `http://localhost:5173`. API calls to `/login`, `/products`,
 
 ### Scripts
 
-| Script               | Description                               |
-| -------------------- | ----------------------------------------- |
-| `npm run dev`        | Start Vite dev server (frontend)          |
-| `npm run build`      | TypeScript check + Vite production build  |
-| `npm run preview`    | Preview production build locally          |
-| `npm run back:dev` | Start backend with hot-reload (tsx watch) |
-| `npm run back:build` | Compile backend TypeScript to `dist-backend/` |
+| Script               | Description                                            |
+| -------------------- | ------------------------------------------------------ |
+| `npm run dev`        | Start Vite dev server (frontend)                       |
+| `npm run build`      | TypeScript check + Vite production build               |
+| `npm run preview`    | Preview production build locally                       |
+| `npm run back:dev`   | Start backend with hot-reload (tsx watch)              |
+| `npm run back:build` | Compile backend TypeScript to `dist-backend/`          |
 | `npm run back:start` | Start compiled backend (`node dist-backend/server.js`) |
-| `npm run lint` | Run ESLint on all files |
+| `npm run lint`       | Run ESLint on all files                                |
 
 ## Deployment Guide
 
@@ -226,7 +226,7 @@ This starts Vite on `http://localhost:5173`. API calls to `/login`, `/products`,
      - `JWT_EXPIRATION` — token expiry (e.g., `7d`)
      - `FRONTEND_URL` — your Vercel deployment URL (e.g., `https://store-cart.vercel.app`) — enables CORS
      - `PORT` — `3000` (or let Render assign it)
-4. The service will be available at `https://your-app.onrender.com`.
+4. The service will be available at `https://store-cart-project.vercel.app/`.
 
 The build step compiles TypeScript from `backend/src/` to `dist-backend/` (CommonJS), and `node dist-backend/server.js` starts the server.
 

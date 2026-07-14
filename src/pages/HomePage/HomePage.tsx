@@ -1,38 +1,35 @@
 import './HomePage.css';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from '../../api/axios';
+import type Product from '../../types/Product';
 
-const featuredProducts = [
-  {
-    name: 'Daily Essentials Kit',
-    category: 'Best Seller',
-    description: 'A practical bundle with the most sought-after items of the week.',
-    price: '$149.90',
-    highlight: 'Free shipping',
-  },
-  {
-    name: 'Comfort Home Collection',
-    category: 'New Arrival',
-    description: 'Pieces designed to make your routine lighter and more organized.',
-    price: '$219.90',
-    highlight: '3 interest-free installments',
-  },
-  {
-    name: 'Tech Pack Pro',
-    category: 'Limited Offer',
-    description: 'Productivity accessories with premium finishing.',
-    price: '$329.90',
-    highlight: '12% off',
-  },
-  {
-    name: 'Weekend Starter Set',
-    category: 'Team Pick',
-    description: 'Curated selection for those who want quality without the hassle.',
-    price: '$179.90',
-    highlight: 'Ready to gift',
-  },
-];
+const FEATURED_IDS = [1, 7, 11, 17];
 
 function HomePage() {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    axios
+      .get('/products')
+      .then((res) => {
+        if (cancelled) return;
+        if (res.data.success && Array.isArray(res.data.data)) {
+          const filtered = (res.data.data as Product[]).filter((p) => FEATURED_IDS.includes(p.id));
+          setFeaturedProducts(filtered);
+        }
+      })
+      .catch(() => {
+        // silently fail, featured stays empty
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <main className="homepage">
       <section className="hero">
@@ -74,7 +71,7 @@ function HomePage() {
       </section>
 
       <section className="benefits" id="benefits">
-        <p className="hero__eyebrow">Benefits of this store model</p>
+        <p className="benefits__heading">Benefits of this store model</p>
         <article>
           <strong>Smart selection</strong>
           <p>Chosen products to highlight items with the best value perception.</p>
@@ -98,8 +95,13 @@ function HomePage() {
 
         <div className="product-grid">
           {featuredProducts.map((product) => (
-            <article className="product-card" key={product.name}>
+            <article className="product-card" key={product.id}>
               <div className="product-card__visual">
+                <img
+                  src={`https://picsum.photos/seed/${product.id}/400/300`}
+                  alt={product.name}
+                  loading="lazy"
+                />
                 <span>{product.category}</span>
               </div>
               <div className="product-card__content">
