@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { Pool } from 'pg';
-import { seedProducts } from '../seed/seedProducts.ts';
+import { seedProducts } from '../seed/seedProducts';
 
 const connectionString = process.env.DATABASE_URL || process.env.CONNECTION_STRING;
 

@@ -5,11 +5,11 @@ import cors from 'cors';
 
 import helmet from 'helmet';
 
-import { startServer } from './config/database.ts';
+import { startServer } from './config/database';
 
-import loginRoutes from './routes/loginRoutes.ts';
-import productsRoutes from './routes/productsRoutes.ts';
-import checkoutRoutes from './routes/checkoutRoutes.ts';
+import loginRoutes from './routes/loginRoutes';
+import productsRoutes from './routes/productsRoutes';
+import checkoutRoutes from './routes/checkoutRoutes';
 
 class App {
   app: express.Application;

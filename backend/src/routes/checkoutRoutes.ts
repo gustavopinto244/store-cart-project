@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { checkout } from '../controllers/checkoutController.ts';
-import { requireAuth } from '../middlewares/auth.ts';
+import { checkout } from '../controllers/checkoutController';
+import { requireAuth } from '../middlewares/auth';
 
 const router = Router();
 

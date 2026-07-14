@@ -10,8 +10,8 @@
     "preview": "vite preview",
     "prepare": "husky",
     "back:dev": "tsx watch backend/src/server.ts",
-    "back:build": "tsc",
-    "back:start": "node dist/server.js"
+    "back:build": "cd backend && npx tsc -p tsconfig.backend.json && node -e \"require('fs').writeFileSync('../dist-backend/package.json', JSON.stringify({type:'commonjs'}))\"",
+    "back:start": "node dist-backend/server.js"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [

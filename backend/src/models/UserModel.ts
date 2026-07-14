@@ -1,6 +1,6 @@
 import validator from 'validator';
 import bcryptjs from 'bcryptjs';
-import { pool } from '../config/database.ts';
+import { pool } from '../config/database';
 
 export interface IUser {
   _id: number;

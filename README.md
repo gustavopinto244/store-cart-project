@@ -4,13 +4,13 @@ A full-stack e-commerce application built as a portfolio project. Shopping cart 
 
 ## Tech Stack
 
-| Layer | Technology | Deployment |
-|-------|-----------|------------|
-| Frontend | React 19, TypeScript, Vite | **Vercel** |
-| Backend | Express 5, TypeScript | **Render** |
-| Database | PostgreSQL (serverless) | **Neon** |
-| Auth | JWT (jsonwebtoken) + bcryptjs | — |
-| Styling | Plain CSS + styled-components | — |
+| Layer    | Technology                    | Deployment |
+| -------- | ----------------------------- | ---------- |
+| Frontend | React 19, TypeScript, Vite    | **Vercel** |
+| Backend  | Express 5, TypeScript         | **Render** |
+| Database | PostgreSQL (serverless)       | **Neon**   |
+| Auth     | JWT (jsonwebtoken) + bcryptjs | —          |
+| Styling  | Plain CSS + styled-components | —          |
 
 ## Features
 
@@ -52,6 +52,7 @@ A full-stack e-commerce application built as a portfolio project. Shopping cart 
 ```
 
 **Data flow:**
+
 1. Frontend renders the UI, fetches products from `GET /products`.
 2. Cart state lives in `localStorage` as `[{id, quantity}]`. On mount, the CartContext calls `/products` to enrich items with name, price, image, etc.
 3. At checkout, the frontend sends `{items, total}` to `POST /checkout` (with JWT in `Authorization` header).
@@ -61,26 +62,27 @@ A full-stack e-commerce application built as a portfolio project. Shopping cart 
 
 ### Authentication
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/login/login` | No | Sign in. Returns `{success, token, user}` |
-| POST | `/login/register` | No | Create account. Returns `{success, token, user}` |
-| POST | `/login/logout` | No | Logout (stateless — frontend discards token) |
-| GET | `/login/me` | Bearer | Check auth status. Returns `{authenticated, user}` |
+| Method | Path              | Auth   | Description                                        |
+| ------ | ----------------- | ------ | -------------------------------------------------- |
+| POST   | `/login/login`    | No     | Sign in. Returns `{success, token, user}`          |
+| POST   | `/login/register` | No     | Create account. Returns `{success, token, user}`   |
+| POST   | `/login/logout`   | No     | Logout (stateless — frontend discards token)       |
+| GET    | `/login/me`       | Bearer | Check auth status. Returns `{authenticated, user}` |
 
 ### Products
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| GET | `/products` | No | Returns `{success, data: Product[]}` (24 products) |
+| Method | Path        | Auth | Description                                        |
+| ------ | ----------- | ---- | -------------------------------------------------- |
+| GET    | `/products` | No   | Returns `{success, data: Product[]}` (24 products) |
 
 ### Checkout
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/checkout` | Bearer | Create order. Body: `{items: [{product_id, product_name, price, quantity}], total}`. Returns `{success, data: {orderId}}` |
+| Method | Path        | Auth   | Description                                                                                                               |
+| ------ | ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
+| POST   | `/checkout` | Bearer | Create order. Body: `{items: [{product_id, product_name, price, quantity}], total}`. Returns `{success, data: {orderId}}` |
 
 All responses follow the same shape:
+
 ```json
 // Success
 { "success": true, "data": { ... } }
@@ -91,15 +93,12 @@ All responses follow the same shape:
 
 ## Database Schema
 
-| Table | Key Columns | Purpose |
-|-------|-------------|---------|
-| `users` | `id`, `email`, `password`, `name`, `created_at` | Authentication credentials |
-| `products` | `id`, `name`, `price_value`, `type`, `brand` | Product catalog (source of truth, 24 rows seeded) |
-| `orders` | `id`, `user_id`, `total`, `created_at` | Each completed checkout |
+| Table         | Key Columns                                                         | Purpose                                                |
+| ------------- | ------------------------------------------------------------------- | ------------------------------------------------------ |
+| `users`       | `id`, `email`, `password`, `name`, `created_at`                     | Authentication credentials                             |
+| `products`    | `id`, `name`, `price_value`, `type`, `brand`                        | Product catalog (source of truth, 24 rows seeded)      |
+| `orders`      | `id`, `user_id`, `total`, `created_at`                              | Each completed checkout                                |
 | `order_items` | `id`, `order_id`, `product_id`, `product_name`, `price`, `quantity` | Line items (snapshot of product data at purchase time) |
-
-**Why `order_items` stores `product_name` and `price` even though `products` already has them?**  
-Because orders are historical documents. If a product's name or price changes later, past orders still show the correct values from the time of purchase. See [`FLUXO_BANCO_DE_DADOS.txt`](./FLUXO_BANCO_DE_DADOS.txt) for details.
 
 Tables are auto-created on server startup (`CREATE TABLE IF NOT EXISTS`). Products are auto-seeded if the table is empty.
 
@@ -160,46 +159,48 @@ Copy `.env.example` to `.env` and fill in the values:
 cp .env.example .env
 ```
 
-| Variable | Where | Description |
-|----------|-------|-------------|
-| `DATABASE_URL` | Render + local | Neon PostgreSQL connection string |
-| `JWT_SECRET` | Render + local | Secret key for JWT signing |
-| `JWT_EXPIRATION` | Render + local | Token expiration (default: `7d`) |
-| `PORT` | Render + local | Backend server port (default: `3000`) |
-| `FRONTEND_URL` | Render | Your Vercel deployment URL (enables CORS) |
-| `VITE_API_URL` | Vercel | Your Render backend URL (leave empty for local dev, Vite proxy handles it) |
+| Variable         | Where          | Description                                                                |
+| ---------------- | -------------- | -------------------------------------------------------------------------- |
+| `DATABASE_URL`   | Render + local | Neon PostgreSQL connection string                                          |
+| `JWT_SECRET`     | Render + local | Secret key for JWT signing                                                 |
+| `JWT_EXPIRATION` | Render + local | Token expiration (default: `7d`)                                           |
+| `PORT`           | Render + local | Backend server port (default: `3000`)                                      |
+| `FRONTEND_URL`   | Render         | Your Vercel deployment URL (enables CORS)                                  |
+| `VITE_API_URL`   | Vercel         | Your Render backend URL (leave empty for local dev, Vite proxy handles it) |
 
 ### Local Development
 
-1. Install dependencies:
-```bash
 npm install
-```
+
+````
 
 2. Start the backend:
 ```bash
 npm run back:dev
-```
+````
+
 This starts Express on `http://localhost:3000`, creates tables, and seeds 24 products.
 
 3. In a separate terminal, start the frontend:
+
 ```bash
 npm run dev
 ```
+
 This starts Vite on `http://localhost:5173`. API calls to `/login`, `/products`, and `/checkout` are proxied to the backend.
 
 4. Open `http://localhost:5173` in your browser. Register an account, browse the store, add items to your cart, and test the checkout flow.
 
 ### Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start Vite dev server (frontend) |
-| `npm run build` | TypeScript check + Vite production build |
-| `npm run preview` | Preview production build locally |
+| Script               | Description                               |
+| -------------------- | ----------------------------------------- |
+| `npm run dev`        | Start Vite dev server (frontend)          |
+| `npm run build`      | TypeScript check + Vite production build  |
+| `npm run preview`    | Preview production build locally          |
 | `npm run back:dev` | Start backend with hot-reload (tsx watch) |
-| `npm run back:build` | Compile backend TypeScript |
-| `npm run back:start` | Start compiled backend |
+| `npm run back:build` | Compile backend TypeScript to `dist-backend/` |
+| `npm run back:start` | Start compiled backend (`node dist-backend/server.js`) |
 | `npm run lint` | Run ESLint on all files |
 
 ## Deployment Guide
@@ -216,6 +217,7 @@ This starts Vite on `http://localhost:5173`. API calls to `/login`, `/products`,
 1. Create a new **Web Service** on Render.
 2. Connect the GitHub repository.
 3. Configure the service:
+   - **Runtime:** Node
    - **Build Command:** `npm install && npm run back:build`
    - **Start Command:** `npm run back:start`
    - **Environment Variables:**
@@ -225,6 +227,8 @@ This starts Vite on `http://localhost:5173`. API calls to `/login`, `/products`,
      - `FRONTEND_URL` — your Vercel deployment URL (e.g., `https://store-cart.vercel.app`) — enables CORS
      - `PORT` — `3000` (or let Render assign it)
 4. The service will be available at `https://your-app.onrender.com`.
+
+The build step compiles TypeScript from `backend/src/` to `dist-backend/` (CommonJS), and `node dist-backend/server.js` starts the server.
 
 ### Frontend — Vercel
 
@@ -250,7 +254,7 @@ This starts Vite on `http://localhost:5173`. API calls to `/login`, `/products`,
 ## Author
 
 **Gustavo Pinto da Conceição**  
-[GitHub](https://github.com/gustavopintodac) — [LinkedIn](https://linkedin.com/in/gustavopintodac)
+[GitHub](https://github.com/gustavopinto244) — [LinkedIn](https://linkedin.com/in/gustavo-pinto-da-conceicao)
 
 ## License
 

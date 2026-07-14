@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import OrderModel from '../models/OrderModel.ts';
-import ProductSearch from '../models/ProductModel.ts';
+import OrderModel from '../models/OrderModel';
+import ProductSearch from '../models/ProductModel';
 
 export async function checkout(req: Request, res: Response): Promise<void> {
   try {
@@ -36,7 +36,7 @@ export async function checkout(req: Request, res: Response): Promise<void> {
       }
     }
 
-    const orderId = await OrderModel.create(parseInt(req.user._id, 10), items, total);
+    const orderId = await OrderModel.create(req.user._id, items, total);
 
     res.status(201).json({ success: true, data: { orderId } });
   } catch (error) {

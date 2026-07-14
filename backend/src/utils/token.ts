@@ -8,7 +8,7 @@ export interface TokenPayload extends JwtPayload {
 
 export const generateToken = (payload: Omit<TokenPayload, keyof JwtPayload>): string => {
   const secret = process.env.JWT_SECRET as string;
-  const expiration = process.env.JWT_EXPIRATION || '7d';
+  const expiration = (process.env.JWT_EXPIRATION || '7d') as jwt.SignOptions['expiresIn'];
   if (!secret) {
     throw new Error('JWT_SECRET is not defined');
   }

@@ -28,6 +28,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "src/pages", "src/layouts", "src/styles", "App.tsx", "main.tsx"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
